@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { User } from 'lucide-react';
 import { WizardLayout } from '@/components/wizard/WizardLayout';
 import { BuildingInfoStep } from '@/components/wizard/BuildingInfoStep';
 import { FloorsConfigStep } from '@/components/wizard/FloorsConfigStep';
@@ -7,11 +9,13 @@ import { LocationTree } from '@/components/LocationTree';
 import { BuildingConfig, Location, AssetTemplate } from '@/types/building';
 import { generateLocations } from '@/utils/locationGenerator';
 import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
 
 type WizardStep = 'building-info' | 'floors-config' | 'asset-templates' | 'review';
 
 const Index = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<WizardStep>('building-info');
   const [buildingConfig, setBuildingConfig] = useState<Partial<BuildingConfig>>({});
   const [locations, setLocations] = useState<Location[]>([]);
@@ -110,6 +114,16 @@ const Index = () => {
     return (
       <div className="min-h-screen bg-secondary p-8">
         <div className="max-w-6xl mx-auto">
+          <div className="flex justify-end mb-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/profile')}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <User className="h-5 w-5" />
+            </Button>
+          </div>
           <LocationTree
             locations={locations}
             onAddLocation={handleAddLocation}
