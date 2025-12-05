@@ -1,4 +1,7 @@
 import { ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { User } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface WizardLayoutProps {
   title: string;
@@ -7,8 +10,20 @@ interface WizardLayoutProps {
 }
 
 export const WizardLayout = ({ title, description, children }: WizardLayoutProps) => {
+  const navigate = useNavigate();
+  
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen relative">
+      {/* Profile Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => navigate('/profile')}
+        className="absolute top-4 right-4 z-10 text-muted-foreground hover:text-foreground"
+      >
+        <User className="h-5 w-5" />
+      </Button>
+      
       {/* Left Panel - Sales/Info */}
       <div className="hidden lg:flex lg:w-1/3 bg-primary p-12 flex-col justify-center text-white">
         <div className="space-y-6">
