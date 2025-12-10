@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { User, Building2, Lock, Camera, ArrowLeft, Save, Eye, EyeOff } from "lucide-react";
+import { User, Building2, Lock, Camera, ArrowLeft, Save, Eye, EyeOff, Pencil, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,32 +33,33 @@ const passwordSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>;
 type PasswordFormValues = z.infer<typeof passwordSchema>;
 
-// Mock data - will be replaced with real data from database
-const mockUser = {
-  firstName: "Carlos",
-  lastName: "Mendez",
-  email: "carlos.mendez@phvistamar.com",
-  phone: "+507 6123-4567",
-  position: "Administrador",
-  organization: "PH Vista Mar",
-  avatar: "",
-};
-
 const Profile = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [isEditing, setIsEditing] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  // User data state - will be replaced with real data from database
+  const [userData, setUserData] = useState({
+    firstName: "Carlos",
+    lastName: "Mendez",
+    email: "carlos.mendez@phvistamar.com",
+    phone: "+507 6123-4567",
+    position: "Administrador",
+    organization: "PH Vista Mar",
+    avatar: "",
+  });
 
   const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      firstName: mockUser.firstName,
-      lastName: mockUser.lastName,
-      email: mockUser.email,
-      phone: mockUser.phone,
-      position: mockUser.position,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: userData.email,
+      phone: userData.phone,
+      position: userData.position,
     },
   });
 
@@ -72,7 +73,15 @@ const Profile = () => {
   });
 
   const onProfileSubmit = (data: ProfileFormValues) => {
-    console.log("Profile data:", data);
+    setUserData(prev => ({
+      ...prev,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      phone: data.phone || "",
+      position: data.position || "",
+    }));
+    setIsEditing(false);
     toast({
       title: "Perfil actualizado",
       description: "Tu información ha sido guardada correctamente.",
@@ -86,6 +95,17 @@ const Profile = () => {
       description: "Tu contraseña ha sido cambiada correctamente.",
     });
     passwordForm.reset();
+  };
+
+  const handleCancelEdit = () => {
+    profileForm.reset({
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: userData.email,
+      phone: userData.phone,
+      position: userData.position,
+    });
+    setIsEditing(false);
   };
 
   return (
@@ -104,7 +124,7 @@ const Profile = () => {
             </Button>
             <div>
               <h1 className="text-2xl font-semibold text-foreground">Mi Perfil</h1>
-              <p className="text-sm text-muted-foreground">{mockUser.organization}</p>
+              <p className="text-sm text-muted-foreground">{userData.organization}</p>
             </div>
           </div>
         </div>
@@ -118,9 +138,9 @@ const Profile = () => {
             <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 -mt-12 sm:-mt-10">
               <div className="relative">
                 <Avatar className="h-24 w-24 border-4 border-card shadow-lg">
-                  <AvatarImage src={mockUser.avatar} />
+                  <AvatarImage src={userData.avatar} />
                   <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-semibold">
-                    {mockUser.firstName[0]}{mockUser.lastName[0]}
+                    {userData.firstName[0]}{userData.lastName[0]}
                   </AvatarFallback>
                 </Avatar>
                 <Button
@@ -133,9 +153,9 @@ const Profile = () => {
               </div>
               <div className="text-center sm:text-left sm:pb-1">
                 <h2 className="text-xl font-semibold text-foreground">
-                  {mockUser.firstName} {mockUser.lastName}
+                  {userData.firstName} {userData.lastName}
                 </h2>
-                <p className="text-muted-foreground">{mockUser.position}</p>
+                <p className="text-muted-foreground">{userData.position}</p>
               </div>
             </div>
           </CardContent>
@@ -161,95 +181,138 @@ const Profile = () => {
           {/* Profile Tab */}
           <TabsContent value="profile">
             <Card>
-              <CardHeader>
-                <CardTitle>Información Personal</CardTitle>
-                <CardDescription>
-                  Actualiza tu información de perfil y datos de contacto.
-                </CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Información Personal</CardTitle>
+                  <CardDescription>
+                    {isEditing ? "Edita tu información de perfil y datos de contacto." : "Tu información de perfil y datos de contacto."}
+                  </CardDescription>
+                </div>
+                {!isEditing && (
+                  <Button variant="outline" size="sm" onClick={() => setIsEditing(true)} className="gap-2">
+                    <Pencil className="h-4 w-4" />
+                    Editar
+                  </Button>
+                )}
               </CardHeader>
               <CardContent>
-                <Form {...profileForm}>
-                  <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-6">
+                {isEditing ? (
+                  <Form {...profileForm}>
+                    <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <FormField
+                          control={profileForm.control}
+                          name="firstName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Nombre</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Tu nombre" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={profileForm.control}
+                          name="lastName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Apellido</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Tu apellido" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <FormField
+                        control={profileForm.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Correo Electrónico</FormLabel>
+                            <FormControl>
+                              <Input type="email" placeholder="tu@email.com" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <FormField
+                          control={profileForm.control}
+                          name="phone"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Teléfono</FormLabel>
+                              <FormControl>
+                                <Input placeholder="+507 6xxx-xxxx" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={profileForm.control}
+                          name="position"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Cargo</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Tu cargo" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="flex justify-end gap-2">
+                        <Button type="button" variant="outline" onClick={handleCancelEdit} className="gap-2">
+                          <X className="h-4 w-4" />
+                          Cancelar
+                        </Button>
+                        <Button type="submit" className="gap-2">
+                          <Save className="h-4 w-4" />
+                          Guardar Cambios
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                ) : (
+                  <div className="space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <FormField
-                        control={profileForm.control}
-                        name="firstName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Nombre</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Tu nombre" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={profileForm.control}
-                        name="lastName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Apellido</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Tu apellido" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Nombre</p>
+                        <p className="font-medium text-foreground">{userData.firstName}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Apellido</p>
+                        <p className="font-medium text-foreground">{userData.lastName}</p>
+                      </div>
                     </div>
 
-                    <FormField
-                      control={profileForm.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Correo Electrónico</FormLabel>
-                          <FormControl>
-                            <Input type="email" placeholder="tu@email.com" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">Correo Electrónico</p>
+                      <p className="font-medium text-foreground">{userData.email}</p>
+                    </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <FormField
-                        control={profileForm.control}
-                        name="phone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Teléfono</FormLabel>
-                            <FormControl>
-                              <Input placeholder="+507 6xxx-xxxx" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={profileForm.control}
-                        name="position"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Cargo</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Tu cargo" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Teléfono</p>
+                        <p className="font-medium text-foreground">{userData.phone || "No especificado"}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Cargo</p>
+                        <p className="font-medium text-foreground">{userData.position || "No especificado"}</p>
+                      </div>
                     </div>
-
-                    <div className="flex justify-end">
-                      <Button type="submit" className="gap-2">
-                        <Save className="h-4 w-4" />
-                        Guardar Cambios
-                      </Button>
-                    </div>
-                  </form>
-                </Form>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -394,7 +457,7 @@ const Profile = () => {
                     <Building2 className="h-8 w-8 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground">{mockUser.organization}</h3>
+                    <h3 className="font-semibold text-foreground">{userData.organization}</h3>
                     <p className="text-sm text-muted-foreground">Organización activa</p>
                   </div>
                 </div>
@@ -402,11 +465,11 @@ const Profile = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="p-4 border border-border rounded-lg">
                     <p className="text-sm text-muted-foreground mb-1">Tu Rol</p>
-                    <p className="font-medium text-foreground">{mockUser.position}</p>
+                    <p className="font-medium text-foreground">{userData.position}</p>
                   </div>
                   <div className="p-4 border border-border rounded-lg">
                     <p className="text-sm text-muted-foreground mb-1">Email Organizacional</p>
-                    <p className="font-medium text-foreground">{mockUser.email}</p>
+                    <p className="font-medium text-foreground">{userData.email}</p>
                   </div>
                 </div>
               </CardContent>
