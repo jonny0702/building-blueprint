@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { User } from 'lucide-react';
 import { WizardLayout } from '@/components/wizard/WizardLayout';
 import { BuildingInfoStep } from '@/components/wizard/BuildingInfoStep';
 import { FloorsConfigStep } from '@/components/wizard/FloorsConfigStep';
@@ -9,11 +7,13 @@ import { LocationTree } from '@/components/LocationTree';
 import { BuildingConfig, Location, AssetTemplate } from '@/types/building';
 import { generateLocations } from '@/utils/locationGenerator';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
+import { User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 type WizardStep = 'building-info' | 'floors-config' | 'asset-templates' | 'review';
 
-const Index = () => {
+const Wizard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<WizardStep>('building-info');
@@ -64,6 +64,7 @@ const Index = () => {
     console.log('Building Config:', buildingConfig);
     console.log('Locations:', locations);
     console.log('Asset Templates:', selectedTemplates);
+    navigate('/');
   };
 
   const handleAddLocation = (parentId: string) => {
@@ -160,4 +161,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Wizard;
