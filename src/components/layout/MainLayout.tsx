@@ -18,7 +18,7 @@ export const MainLayout = ({ children, title, organizationName }: MainLayoutProp
   return (
     <div className="min-h-screen flex w-full bg-secondary">
       {/* Sidebar */}
-      <AppSidebar collapsed={sidebarCollapsed} />
+      <AppSidebar collapsed={sidebarCollapsed} onToggle={toggleSidebar} />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
@@ -26,7 +26,6 @@ export const MainLayout = ({ children, title, organizationName }: MainLayoutProp
         <TopMenuBar
           title={title}
           organizationName={organizationName}
-          onToggleSidebar={toggleSidebar}
         />
 
         {/* Page Content */}

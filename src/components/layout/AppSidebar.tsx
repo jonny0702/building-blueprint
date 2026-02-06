@@ -1,13 +1,15 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Building2 } from 'lucide-react';
+import { Building2, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { navigationConfig } from '@/config/navigation';
+import { Button } from '@/components/ui/button';
 
 interface AppSidebarProps {
   collapsed: boolean;
+  onToggle: () => void;
 }
 
-export const AppSidebar = ({ collapsed }: AppSidebarProps) => {
+export const AppSidebar = ({ collapsed, onToggle }: AppSidebarProps) => {
   const location = useLocation();
 
   return (
@@ -17,18 +19,44 @@ export const AppSidebar = ({ collapsed }: AppSidebarProps) => {
         collapsed ? 'w-16' : 'w-64'
       )}
     >
-      {/* Logo */}
+      {/* Logo and Toggle */}
       <div className={cn(
         'h-16 flex items-center border-b border-border px-4',
-        collapsed ? 'justify-center' : 'gap-3'
+        collapsed ? 'justify-center' : 'justify-between'
       )}>
-        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
-          <Building2 className="h-5 w-5 text-primary-foreground" />
+        <div className={cn('flex items-center', collapsed ? '' : 'gap-3')}>
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+            <Building2 className="h-5 w-5 text-primary-foreground" />
+          </div>
+          {!collapsed && (
+            <span className="font-bold text-lg text-foreground">Fixly</span>
+          )}
         </div>
         {!collapsed && (
-          <span className="font-bold text-lg text-foreground">Fixly</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggle}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
         )}
       </div>
+      
+      {/* Collapsed toggle button */}
+      {collapsed && (
+        <div className="flex justify-center py-3 border-b border-border">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggle}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+        </div>
+      )}
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-4">
