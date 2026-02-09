@@ -7,6 +7,9 @@ import Dashboard from "./pages/Dashboard";
 import Wizard from "./pages/Wizard";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
+import Assets from "./pages/Assets";
+import AssetDetail from "./pages/AssetDetail";
+import AssetCreate from "./pages/AssetCreate";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +25,9 @@ const App = () => (
           <Route path="/" element={<Dashboard />} />
           <Route path="/wizard" element={<Wizard />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/activos" element={<Assets />} />
+          <Route path="/activos/nuevo" element={<AssetCreate />} />
+          <Route path="/activos/:id" element={<AssetDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
