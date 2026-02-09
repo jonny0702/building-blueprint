@@ -103,14 +103,12 @@ const AssetDetail = () => {
                 
                 <div className="grid grid-cols-[200px_1fr] gap-8">
                   {/* Imagen del activo */}
-                  <div className="relative">
-                    <div className="w-48 h-48 bg-muted rounded-lg flex items-center justify-center overflow-hidden">
-                      <img 
-                        src={asset.imageUrl || '/placeholder.svg'} 
-                        alt={asset.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+                  <div className="w-48 h-48 bg-muted rounded-lg flex items-center justify-center overflow-hidden relative">
+                    <img 
+                      src={asset.imageUrl || '/placeholder.svg'} 
+                      alt={asset.name}
+                      className="w-full h-full object-cover"
+                    />
                     <Button 
                       variant="secondary" 
                       size="icon" 
