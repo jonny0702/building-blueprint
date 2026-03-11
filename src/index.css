@@ -109,8 +109,13 @@ All colors MUST be HSL.
 }
 
 /* Fix date input calendar icon alignment */
+input[type="date"] {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
-  margin: 0;
-  padding: 0;
+  margin-left: auto;
 }
