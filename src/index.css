@@ -110,12 +110,20 @@ All colors MUST be HSL.
 
 /* Fix date input calendar icon alignment */
 input[type="date"] {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  position: relative;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
-  margin-left: auto;
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+input[type="date"]::-webkit-date-and-time-value {
+  text-align: left;
 }
