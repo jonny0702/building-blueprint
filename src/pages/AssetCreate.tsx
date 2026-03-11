@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Camera } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -93,26 +93,7 @@ const AssetCreate = () => {
             <CardContent className="p-6">
               <h2 className="text-xl font-semibold mb-6">Información del Activo</h2>
               
-              <div className="grid grid-cols-[200px_1fr] gap-8">
-                {/* Imagen del activo */}
-                <div className="relative">
-                  <div className="w-48 h-48 bg-muted rounded-lg flex items-center justify-center overflow-hidden border-2 border-dashed border-muted-foreground/25">
-                    <div className="text-center text-muted-foreground">
-                      <Camera className="h-8 w-8 mx-auto mb-2" />
-                      <span className="text-sm">Agregar imagen</span>
-                    </div>
-                  </div>
-                  <Button 
-                    type="button"
-                    variant="secondary" 
-                    size="icon" 
-                    className="absolute bottom-2 right-2 rounded-full"
-                  >
-                    <Camera className="h-4 w-4" />
-                  </Button>
-                </div>
-
-                {/* Campos del formulario */}
+              <div>
                 <div className="space-y-6">
                   {/* Fila 1: Nombre y Código */}
                   <div className="grid grid-cols-2 gap-4">
