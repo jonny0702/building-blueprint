@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Camera, Save, X } from 'lucide-react';
+import AssetImageUploadModal from './AssetImageUploadModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -23,6 +24,7 @@ interface AssetGeneralViewProps {
 
 const AssetGeneralView = ({ asset, isEditing, onSave, onCancel }: AssetGeneralViewProps) => {
   const [formData, setFormData] = useState<Asset>(asset);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
 
   const handleChange = (field: keyof Asset, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -74,11 +76,19 @@ const AssetGeneralView = ({ asset, isEditing, onSave, onCancel }: AssetGeneralVi
                 variant="secondary"
                 size="icon"
                 className="absolute bottom-2 right-2 rounded-full"
+                onClick={() => setImageModalOpen(true)}
               >
                 <Camera className="h-4 w-4" />
               </Button>
             )}
           </div>
+
+          <AssetImageUploadModal
+            open={imageModalOpen}
+            onOpenChange={setImageModalOpen}
+            currentImage={formData.imageUrl}
+            onImageSelect={(url) => handleChange('imageUrl', url)}
+          />
 
           {/* Campos del formulario */}
           <div className="space-y-6">
