@@ -24,6 +24,7 @@ interface AssetGeneralViewProps {
 
 const AssetGeneralView = ({ asset, isEditing, onSave, onCancel }: AssetGeneralViewProps) => {
   const [formData, setFormData] = useState<Asset>(asset);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
 
   const handleChange = (field: keyof Asset, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
