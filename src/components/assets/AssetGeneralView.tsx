@@ -88,7 +88,7 @@ const AssetGeneralView = ({ asset, isEditing, onSave, onCancel }: AssetGeneralVi
             onOpenChange={setImageModalOpen}
             currentImage={formData.imageUrl}
             onImageSelect={(url) => handleChange('imageUrl', url)}
-          </div>
+          />
 
           {/* Campos del formulario */}
           <div className="space-y-6">
