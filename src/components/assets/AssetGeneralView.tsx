@@ -76,10 +76,18 @@ const AssetGeneralView = ({ asset, isEditing, onSave, onCancel }: AssetGeneralVi
                 variant="secondary"
                 size="icon"
                 className="absolute bottom-2 right-2 rounded-full"
+                onClick={() => setImageModalOpen(true)}
               >
                 <Camera className="h-4 w-4" />
               </Button>
             )}
+          </div>
+
+          <AssetImageUploadModal
+            open={imageModalOpen}
+            onOpenChange={setImageModalOpen}
+            currentImage={formData.imageUrl}
+            onImageSelect={(url) => handleChange('imageUrl', url)}
           </div>
 
           {/* Campos del formulario */}
