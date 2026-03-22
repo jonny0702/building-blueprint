@@ -11,6 +11,7 @@ import Assets from "./pages/Assets";
 import AssetDetail from "./pages/AssetDetail";
 import AssetCreate from "./pages/AssetCreate";
 import NotFound from "./pages/NotFound";
+import WorkOrders from "./pages/WorkOrders";
 
 const queryClient = new QueryClient();
 
