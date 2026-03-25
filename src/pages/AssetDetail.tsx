@@ -118,10 +118,8 @@ const AssetDetail = () => {
           <TabsContent value="history">
             <Card>
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold mb-4">Historial de Activo</h2>
-                <p className="text-muted-foreground">
-                  No hay registros de historial para este activo.
-                </p>
+                <h2 className="text-xl font-semibold mb-4">Historial de activo</h2>
+                <AssetHistoryTable history={history} />
               </CardContent>
             </Card>
           </TabsContent>
