@@ -127,6 +127,12 @@ const WorkOrders = () => {
         onClose={() => setDetailOpen(false)}
         onStatusChange={handleStatusChange}
       />
+      <WorkOrderCertificationModal
+        open={certModalOpen}
+        workOrderTitle={workOrders.find((wo) => wo.id === pendingCertWoId)?.title}
+        onClose={() => { setCertModalOpen(false); setPendingCertWoId(null); }}
+        onConfirm={handleCertConfirm}
+      />
     </MainLayout>
   );
 };
