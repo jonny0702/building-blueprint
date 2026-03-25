@@ -10,6 +10,8 @@ import { getAssetById, getAssetLocationPath } from '@/data/mockAssets';
 import { Asset, assetStatusLabels, assetStatusColors } from '@/types/asset';
 import AssetGeneralView from '@/components/assets/AssetGeneralView';
 import { toast } from 'sonner';
+import AssetHistoryTable from '@/components/assets/AssetHistoryTable';
+import { getAssetHistory } from '@/data/mockAssetHistory';
 
 const AssetDetail = () => {
   const navigate = useNavigate();
@@ -18,6 +20,7 @@ const AssetDetail = () => {
 
   const asset = getAssetById(id || '');
   const locationPath = getAssetLocationPath(id || '');
+  const history = getAssetHistory(id || '');
 
   if (!asset) {
     return (
@@ -115,10 +118,8 @@ const AssetDetail = () => {
           <TabsContent value="history">
             <Card>
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold mb-4">Historial de Activo</h2>
-                <p className="text-muted-foreground">
-                  No hay registros de historial para este activo.
-                </p>
+                <h2 className="text-xl font-semibold mb-4">Historial de activo</h2>
+                <AssetHistoryTable history={history} />
               </CardContent>
             </Card>
           </TabsContent>
