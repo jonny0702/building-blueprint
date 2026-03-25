@@ -4,6 +4,7 @@ import { KanbanBoard } from '@/components/workorders/KanbanBoard';
 import { WorkOrderTable } from '@/components/workorders/WorkOrderTable';
 import { WorkOrderCreateModal } from '@/components/workorders/WorkOrderCreateModal';
 import { WorkOrderDetailModal } from '@/components/workorders/WorkOrderDetailModal';
+import { WorkOrderCertificationModal } from '@/components/workorders/WorkOrderCertificationModal';
 import { mockWorkOrders } from '@/data/mockWorkOrders';
 import { WorkOrder, WorkOrderStatus } from '@/types/workOrder';
 import { Button } from '@/components/ui/button';
@@ -15,15 +16,34 @@ const WorkOrders = () => {
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedWO, setSelectedWO] = useState<WorkOrder | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [certModalOpen, setCertModalOpen] = useState(false);
+  const [pendingCertWoId, setPendingCertWoId] = useState<string | null>(null);
 
-  const handleStatusChange = (woId: string, newStatus: WorkOrderStatus) => {
+  const applyStatusChange = (woId: string, newStatus: WorkOrderStatus) => {
     setWorkOrders((prev) =>
       prev.map((wo) => (wo.id === woId ? { ...wo, status: newStatus } : wo))
     );
-    // Also update the selected WO if it's open
     if (selectedWO?.id === woId) {
       setSelectedWO((prev) => prev ? { ...prev, status: newStatus } : null);
     }
+  };
+
+  const handleStatusChange = (woId: string, newStatus: WorkOrderStatus) => {
+    if (newStatus === 'done') {
+      setPendingCertWoId(woId);
+      setCertModalOpen(true);
+      return;
+    }
+    applyStatusChange(woId, newStatus);
+  };
+
+  const handleCertConfirm = (justification: string) => {
+    if (pendingCertWoId) {
+      applyStatusChange(pendingCertWoId, 'done');
+      console.log('Certification justification:', justification);
+    }
+    setCertModalOpen(false);
+    setPendingCertWoId(null);
   };
 
   const handleCreate = (data: Omit<WorkOrder, 'id' | 'code' | 'createdAt' | 'commentsCount' | 'attachmentsCount' | 'tasks'>) => {
@@ -106,6 +126,12 @@ const WorkOrders = () => {
         open={detailOpen}
         onClose={() => setDetailOpen(false)}
         onStatusChange={handleStatusChange}
+      />
+      <WorkOrderCertificationModal
+        open={certModalOpen}
+        workOrderTitle={workOrders.find((wo) => wo.id === pendingCertWoId)?.title}
+        onClose={() => { setCertModalOpen(false); setPendingCertWoId(null); }}
+        onConfirm={handleCertConfirm}
       />
     </MainLayout>
   );
