@@ -20,6 +20,7 @@ const AssetDetail = () => {
 
   const asset = getAssetById(id || '');
   const locationPath = getAssetLocationPath(id || '');
+  const history = getAssetHistory(id || '');
 
   if (!asset) {
     return (
