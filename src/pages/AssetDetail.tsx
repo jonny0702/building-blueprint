@@ -10,6 +10,8 @@ import { getAssetById, getAssetLocationPath } from '@/data/mockAssets';
 import { Asset, assetStatusLabels, assetStatusColors } from '@/types/asset';
 import AssetGeneralView from '@/components/assets/AssetGeneralView';
 import { toast } from 'sonner';
+import AssetHistoryTable from '@/components/assets/AssetHistoryTable';
+import { getAssetHistory } from '@/data/mockAssetHistory';
 
 const AssetDetail = () => {
   const navigate = useNavigate();
