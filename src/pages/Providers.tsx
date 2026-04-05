@@ -8,13 +8,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Plus, Search, Pencil, Trash2 } from 'lucide-react';
 import { mockProviders } from '@/data/mockProviders';
-import { Provider, ProviderStatus, providerStatusLabels, providerStatusColors } from '@/types/provider';
+import { Provider, providerStatusLabels, providerStatusColors } from '@/types/provider';
 import { ProviderInviteModal } from '@/components/providers/ProviderInviteModal';
 import { ProviderSentConfirmation } from '@/components/providers/ProviderSentConfirmation';
+import { useOrganization } from '@/hooks/useOrganization';
 import { useToast } from '@/hooks/use-toast';
 
 const Providers = () => {
   const { toast } = useToast();
+  const { organization, relationConfig } = useOrganization();
   const [providers, setProviders] = useState<Provider[]>(mockProviders);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -39,32 +41,34 @@ const Providers = () => {
 
   const handleDelete = (id: string) => {
     setProviders((prev) => prev.filter((p) => p.id !== id));
-    toast({ title: 'Proveedor eliminado' });
+    toast({ title: relationConfig.deleteToastMessage });
   };
 
   if (showConfirmation) {
-    return <ProviderSentConfirmation onBack={() => setShowConfirmation(false)} />;
+    return (
+      <ProviderSentConfirmation
+        onBack={() => setShowConfirmation(false)}
+        message={relationConfig.confirmationMessage}
+      />
+    );
   }
 
   return (
-    <MainLayout title="Proveedores" organizationName="PH. Brisas de Miraflores">
+    <MainLayout title="Relaciones" organizationName={organization.name}>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Gestión de proveedores / Relaciones</h1>
-          <p className="text-muted-foreground mt-1">
-            Gestiona tu relación entre el PH y el proveedor de mantenimiento
-          </p>
+          <h1 className="text-2xl font-bold text-foreground">{relationConfig.pageTitle}</h1>
+          <p className="text-muted-foreground mt-1">{relationConfig.pageSubtitle}</p>
         </div>
 
         <Card>
           <CardContent className="p-6 space-y-4">
-            {/* Filters */}
             <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
               <div className="flex flex-col sm:flex-row gap-3 flex-1">
                 <div className="relative flex-1 max-w-sm">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Buscar Proveedor"
+                    placeholder={relationConfig.searchPlaceholder}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="pl-9"
@@ -86,15 +90,14 @@ const Providers = () => {
               </div>
               <Button onClick={() => setInviteOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />
-                Agregar nuevo
+                {relationConfig.addButtonLabel}
               </Button>
             </div>
 
-            {/* Table */}
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Proveedor</TableHead>
+                  <TableHead>{relationConfig.tableEntityLabel}</TableHead>
                   <TableHead>Estado</TableHead>
                   <TableHead>Nombre</TableHead>
                   <TableHead>Contacto</TableHead>
@@ -133,7 +136,7 @@ const Providers = () => {
                 {filtered.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                      No se encontraron proveedores
+                      {relationConfig.emptyMessage}
                     </TableCell>
                   </TableRow>
                 )}
@@ -143,7 +146,13 @@ const Providers = () => {
         </Card>
       </div>
 
-      <ProviderInviteModal open={inviteOpen} onOpenChange={setInviteOpen} onInvite={handleInvite} />
+      <ProviderInviteModal
+        open={inviteOpen}
+        onOpenChange={setInviteOpen}
+        onInvite={handleInvite}
+        title={relationConfig.inviteModalTitle}
+        description={relationConfig.inviteModalDescription}
+      />
     </MainLayout>
   );
 };

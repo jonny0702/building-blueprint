@@ -3,9 +3,10 @@ import { ArrowLeft, Send } from 'lucide-react';
 
 interface ProviderSentConfirmationProps {
   onBack: () => void;
+  message?: string;
 }
 
-export const ProviderSentConfirmation = ({ onBack }: ProviderSentConfirmationProps) => {
+export const ProviderSentConfirmation = ({ onBack, message }: ProviderSentConfirmationProps) => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-secondary px-4">
       <h1 className="text-2xl font-bold text-foreground mb-2">Fixly</h1>
@@ -19,7 +20,7 @@ export const ProviderSentConfirmation = ({ onBack }: ProviderSentConfirmationPro
         </div>
         <h2 className="text-xl font-bold text-foreground">Correo Enviado!</h2>
         <p className="text-muted-foreground text-sm">
-          Tu proveedor ha recibido tu correo de enlace
+          {message ?? 'Se ha enviado el correo de enlace exitosamente'}
         </p>
         <Button onClick={onBack} className="w-full" size="lg">
           <ArrowLeft className="mr-2 h-4 w-4" />
