@@ -13,6 +13,7 @@ import AssetCreate from "./pages/AssetCreate";
 import NotFound from "./pages/NotFound";
 import WorkOrders from "./pages/WorkOrders";
 import Users from "./pages/Users";
+import Providers from "./pages/Providers";
 
 const queryClient = new QueryClient();
 
