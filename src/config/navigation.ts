@@ -5,7 +5,7 @@ import {
   History, 
   FileText, 
   Users, 
-  Building, 
+  Link2, 
   Settings,
   LucideIcon
 } from 'lucide-react';
