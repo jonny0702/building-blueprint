@@ -9,9 +9,11 @@ interface ProviderInviteModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onInvite: (email: string) => void;
+  title?: string;
+  description?: string;
 }
 
-export const ProviderInviteModal = ({ open, onOpenChange, onInvite }: ProviderInviteModalProps) => {
+export const ProviderInviteModal = ({ open, onOpenChange, onInvite, title, description }: ProviderInviteModalProps) => {
   const [email, setEmail] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -25,12 +27,12 @@ export const ProviderInviteModal = ({ open, onOpenChange, onInvite }: ProviderIn
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Invita a un proveedor</DialogTitle>
-          <DialogDescription>Para invitar a proveedor debes poner el correo</DialogDescription>
+          <DialogTitle>{title ?? 'Invita a un proveedor'}</DialogTitle>
+          <DialogDescription>{description ?? 'Para invitar debes ingresar el correo'}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
           <div className="space-y-2">
-            <Label htmlFor="provider-email">Correo electrónico del proveedor</Label>
+            <Label htmlFor="provider-email">Correo electrónico</Label>
             <Input
               id="provider-email"
               type="email"

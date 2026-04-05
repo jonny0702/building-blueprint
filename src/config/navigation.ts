@@ -5,7 +5,7 @@ import {
   History, 
   FileText, 
   Users, 
-  Building, 
+  Link2, 
   Settings,
   LucideIcon
 } from 'lucide-react';
@@ -46,7 +46,7 @@ export const navigationConfig: NavGroup[] = [
     label: 'Sistema',
     items: [
       { title: 'Usuarios', url: '/usuarios', icon: Users },
-      { title: 'Proveedores', url: '/proveedores', icon: Building },
+      { title: 'Relaciones', url: '/relaciones', icon: Link2 },
       { title: 'Configuración', url: '/configuracion', icon: Settings },
     ],
   },
