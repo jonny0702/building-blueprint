@@ -13,6 +13,7 @@ import AssetCreate from "./pages/AssetCreate";
 import NotFound from "./pages/NotFound";
 import WorkOrders from "./pages/WorkOrders";
 import Users from "./pages/Users";
+import Providers from "./pages/Providers";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/activos/:id" element={<AssetDetail />} />
           <Route path="/ordenes" element={<WorkOrders />} />
           <Route path="/usuarios" element={<Users />} />
+          <Route path="/proveedores" element={<Providers />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
