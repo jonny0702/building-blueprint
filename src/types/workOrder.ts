@@ -10,6 +10,17 @@ export interface WorkOrderTask {
   status: 'pending' | 'in_progress' | 'done';
 }
 
+export interface StatusTransition {
+  id: string;
+  workOrderId: string;
+  fromStatus: WorkOrderStatus;
+  toStatus: WorkOrderStatus;
+  comment: string;
+  author: string;
+  authorRole: string;
+  timestamp: string;
+}
+
 export interface WorkOrder {
   id: string;
   code: string;
@@ -18,7 +29,7 @@ export interface WorkOrder {
   status: WorkOrderStatus;
   priority: WorkOrderPriority;
   activityType: ActivityType;
-  assetCategory: string; // e.g. "Alarmas contra incendios"
+  assetCategory: string;
   assignedTo: string;
   reporter: string;
   location: string;
@@ -27,6 +38,7 @@ export interface WorkOrder {
   commentsCount: number;
   attachmentsCount: number;
   tasks: WorkOrderTask[];
+  transitions: StatusTransition[];
 }
 
 export const workOrderStatusLabels: Record<WorkOrderStatus, string> = {
