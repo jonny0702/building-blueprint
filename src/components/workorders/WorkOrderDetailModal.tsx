@@ -33,7 +33,7 @@ import {
   workOrderPriorityLabels,
   workOrderPriorityColors,
 } from '@/types/workOrder';
-import { Settings, Calendar, ChevronDown, User } from 'lucide-react';
+import { Settings, Calendar, ChevronDown, User, MessageSquare, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 
 interface WorkOrderDetailModalProps {
@@ -70,8 +70,14 @@ export const WorkOrderDetailModal = ({
 }: WorkOrderDetailModalProps) => {
   const [detailsOpen, setDetailsOpen] = useState(true);
   const [tasksOpen, setTasksOpen] = useState(true);
+  const [historyOpen, setHistoryOpen] = useState(true);
 
   if (!workOrder) return null;
+
+  const formatDate = (iso: string) => {
+    const d = new Date(iso);
+    return d.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  };
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
@@ -101,7 +107,7 @@ export const WorkOrderDetailModal = ({
         </DialogHeader>
 
         <div className="flex flex-col lg:flex-row gap-6 px-6 pb-6 pt-4">
-          {/* Left: Details & Tasks */}
+          {/* Left: Details, Tasks & History */}
           <div className="flex-1 space-y-4">
             {/* Detalles clave */}
             <Collapsible open={detailsOpen} onOpenChange={setDetailsOpen}>
@@ -117,7 +123,7 @@ export const WorkOrderDetailModal = ({
               </CollapsibleContent>
             </Collapsible>
 
-            {/* Tareas (subtasks) */}
+            {/* Tareas */}
             {workOrder.tasks.length > 0 && (
               <Collapsible open={tasksOpen} onOpenChange={setTasksOpen}>
                 <CollapsibleTrigger className="flex items-center gap-1 font-semibold text-sm hover:text-primary transition-colors">
@@ -158,6 +164,42 @@ export const WorkOrderDetailModal = ({
                 </CollapsibleContent>
               </Collapsible>
             )}
+
+            {/* Historial de cambios */}
+            <Collapsible open={historyOpen} onOpenChange={setHistoryOpen}>
+              <CollapsibleTrigger className="flex items-center gap-1 font-semibold text-sm hover:text-primary transition-colors">
+                <ChevronDown className={`w-4 h-4 transition-transform ${historyOpen ? '' : '-rotate-90'}`} />
+                <MessageSquare className="w-4 h-4 mr-1" />
+                Historial de Comentarios ({workOrder.transitions.length})
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pt-2">
+                {workOrder.transitions.length === 0 ? (
+                  <p className="text-xs text-muted-foreground py-4 text-center">No hay comentarios de transición aún.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {[...workOrder.transitions].reverse().map((t) => (
+                      <div key={t.id} className="border rounded-lg p-3 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
+                              <User className="w-3.5 h-3.5 text-primary" />
+                            </div>
+                            <span className="text-sm font-medium">{t.author}</span>
+                          </div>
+                          <span className="text-[10px] text-muted-foreground">{formatDate(t.timestamp)}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs">
+                          <Badge variant="outline" className="text-[10px]">{workOrderStatusLabels[t.fromStatus]}</Badge>
+                          <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                          <Badge variant="outline" className="text-[10px]">{workOrderStatusLabels[t.toStatus]}</Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{t.comment}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CollapsibleContent>
+            </Collapsible>
           </div>
 
           {/* Right sidebar */}
