@@ -3,6 +3,7 @@ import { WizardLayout } from '@/components/wizard/WizardLayout';
 import { BuildingInfoStep } from '@/components/wizard/BuildingInfoStep';
 import { FloorsConfigStep } from '@/components/wizard/FloorsConfigStep';
 import { AssetTemplatesStep } from '@/components/wizard/AssetTemplatesStep';
+import { TemplateBuilderStep, TemplateBuilderOutput } from '@/components/wizard/TemplateBuilderStep';
 import { LocationTree } from '@/components/LocationTree';
 import { BuildingConfig, Location, AssetTemplate } from '@/types/building';
 import { generateLocations } from '@/utils/locationGenerator';
@@ -11,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-type WizardStep = 'building-info' | 'floors-config' | 'asset-templates' | 'review';
+type WizardStep = 'building-info' | 'floors-config' | 'asset-templates' | 'template-builder' | 'review';
 
 const Wizard = () => {
   const { toast } = useToast();
