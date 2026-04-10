@@ -96,6 +96,8 @@ const Wizard = () => {
         return 'Configuración de Pisos';
       case 'asset-templates':
         return 'Plantillas de Assets';
+      case 'template-builder':
+        return 'Constructor de Plantilla';
       case 'review':
         return 'Revisar y Confirmar';
       default:
@@ -111,6 +113,8 @@ const Wizard = () => {
         return 'Define la estructura de pisos y áreas comunes';
       case 'asset-templates':
         return 'Selecciona plantillas predefinidas para tus equipos';
+      case 'template-builder':
+        return 'Configura las subcategorías, modelos y distribución de tus activos';
       case 'review':
         return 'Revisa y edita la estructura generada antes de guardar';
       default:
@@ -162,6 +166,12 @@ const Wizard = () => {
         <AssetTemplatesStep
           onNext={handleAssetTemplates}
           onBack={() => setCurrentStep('floors-config')}
+        />
+      )}
+      {currentStep === 'template-builder' && (
+        <TemplateBuilderStep
+          onNext={handleTemplateBuilder}
+          onBack={() => setCurrentStep('asset-templates')}
         />
       )}
     </WizardLayout>
