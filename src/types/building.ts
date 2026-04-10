@@ -31,3 +31,31 @@ export interface AssetTemplate {
     [key: string]: string | number | boolean;
   };
 }
+
+// Template Builder types
+export type DistributionRule = 'PER_FLOOR' | 'PER_TOWER' | 'CUSTOM';
+
+export interface ModelCatalogEntry {
+  id: string;
+  brand: string;
+  model: string;
+}
+
+export interface PackageSubcategory {
+  subcategoryId: string;
+  subcategoryName: string;
+  models: ModelCatalogEntry[];
+}
+
+export interface PackageData {
+  packageId: string;
+  packageName: string;
+  subcategories: PackageSubcategory[];
+}
+
+export interface SubcategoryConfig {
+  subcategoryId: string;
+  modelCatalogId: string | null;
+  distributionRule: DistributionRule;
+  quantity: number;
+}
