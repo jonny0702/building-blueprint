@@ -4,6 +4,7 @@ import { BuildingInfoStep } from '@/components/wizard/BuildingInfoStep';
 import { FloorsConfigStep } from '@/components/wizard/FloorsConfigStep';
 import { AssetTemplatesStep } from '@/components/wizard/AssetTemplatesStep';
 import { TemplateBuilderStep, TemplateBuilderOutput } from '@/components/wizard/TemplateBuilderStep';
+import { TemplateBuilderStep, TemplateBuilderOutput } from '@/components/wizard/TemplateBuilderStep';
 import { LocationTree } from '@/components/LocationTree';
 import { BuildingConfig, Location, AssetTemplate } from '@/types/building';
 import { generateLocations } from '@/utils/locationGenerator';
