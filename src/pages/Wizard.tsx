@@ -3,6 +3,7 @@ import { WizardLayout } from '@/components/wizard/WizardLayout';
 import { BuildingInfoStep } from '@/components/wizard/BuildingInfoStep';
 import { FloorsConfigStep } from '@/components/wizard/FloorsConfigStep';
 import { AssetTemplatesStep } from '@/components/wizard/AssetTemplatesStep';
+import { TemplateBuilderStep, TemplateBuilderOutput } from '@/components/wizard/TemplateBuilderStep';
 import { LocationTree } from '@/components/LocationTree';
 import { BuildingConfig, Location, AssetTemplate } from '@/types/building';
 import { generateLocations } from '@/utils/locationGenerator';
@@ -11,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-type WizardStep = 'building-info' | 'floors-config' | 'asset-templates' | 'review';
+type WizardStep = 'building-info' | 'floors-config' | 'asset-templates' | 'template-builder' | 'review';
 
 const Wizard = () => {
   const { toast } = useToast();
@@ -20,6 +21,7 @@ const Wizard = () => {
   const [buildingConfig, setBuildingConfig] = useState<Partial<BuildingConfig>>({});
   const [locations, setLocations] = useState<Location[]>([]);
   const [selectedTemplates, setSelectedTemplates] = useState<AssetTemplate[]>([]);
+  const [templateBuilderOutput, setTemplateBuilderOutput] = useState<TemplateBuilderOutput | null>(null);
 
   const handleBuildingInfo = (data: Partial<BuildingConfig>) => {
     setBuildingConfig(prev => ({ ...prev, ...data }));
@@ -33,11 +35,16 @@ const Wizard = () => {
 
   const handleAssetTemplates = (templates: AssetTemplate[]) => {
     setSelectedTemplates(templates);
+    setCurrentStep('template-builder');
+  };
+
+  const handleTemplateBuilder = (output: TemplateBuilderOutput) => {
+    setTemplateBuilderOutput(output);
     const fullConfig = { ...buildingConfig } as BuildingConfig;
     const generatedLocations = generateLocations(fullConfig);
     setLocations(generatedLocations);
     setCurrentStep('review');
-    
+
     toast({
       title: '¡Estructura generada!',
       description: `Se crearon ${countLocations(generatedLocations)} ubicaciones automáticamente.`,
@@ -89,6 +96,8 @@ const Wizard = () => {
         return 'Configuración de Pisos';
       case 'asset-templates':
         return 'Plantillas de Assets';
+      case 'template-builder':
+        return 'Constructor de Plantilla';
       case 'review':
         return 'Revisar y Confirmar';
       default:
@@ -104,6 +113,8 @@ const Wizard = () => {
         return 'Define la estructura de pisos y áreas comunes';
       case 'asset-templates':
         return 'Selecciona plantillas predefinidas para tus equipos';
+      case 'template-builder':
+        return 'Configura las subcategorías, modelos y distribución de tus activos';
       case 'review':
         return 'Revisa y edita la estructura generada antes de guardar';
       default:
@@ -155,6 +166,12 @@ const Wizard = () => {
         <AssetTemplatesStep
           onNext={handleAssetTemplates}
           onBack={() => setCurrentStep('floors-config')}
+        />
+      )}
+      {currentStep === 'template-builder' && (
+        <TemplateBuilderStep
+          onNext={handleTemplateBuilder}
+          onBack={() => setCurrentStep('asset-templates')}
         />
       )}
     </WizardLayout>
