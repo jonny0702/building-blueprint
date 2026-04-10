@@ -21,6 +21,7 @@ const Wizard = () => {
   const [buildingConfig, setBuildingConfig] = useState<Partial<BuildingConfig>>({});
   const [locations, setLocations] = useState<Location[]>([]);
   const [selectedTemplates, setSelectedTemplates] = useState<AssetTemplate[]>([]);
+  const [templateBuilderOutput, setTemplateBuilderOutput] = useState<TemplateBuilderOutput | null>(null);
 
   const handleBuildingInfo = (data: Partial<BuildingConfig>) => {
     setBuildingConfig(prev => ({ ...prev, ...data }));
@@ -34,11 +35,16 @@ const Wizard = () => {
 
   const handleAssetTemplates = (templates: AssetTemplate[]) => {
     setSelectedTemplates(templates);
+    setCurrentStep('template-builder');
+  };
+
+  const handleTemplateBuilder = (output: TemplateBuilderOutput) => {
+    setTemplateBuilderOutput(output);
     const fullConfig = { ...buildingConfig } as BuildingConfig;
     const generatedLocations = generateLocations(fullConfig);
     setLocations(generatedLocations);
     setCurrentStep('review');
-    
+
     toast({
       title: '¡Estructura generada!',
       description: `Se crearon ${countLocations(generatedLocations)} ubicaciones automáticamente.`,
