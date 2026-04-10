@@ -17,6 +17,7 @@ export const mockWorkOrders: WorkOrder[] = [
     createdAt: '2026-03-20',
     commentsCount: 10,
     attachmentsCount: 2,
+    transitions: [],
     tasks: [
       { id: 'wt-1', assetCode: 'DH123478', assetStatus: 'operative', description: 'Cambio de detector', status: 'done' },
       { id: 'wt-2', assetCode: 'DH123478', assetStatus: 'operative', description: 'Cambio de detector', status: 'pending' },
@@ -40,6 +41,7 @@ export const mockWorkOrders: WorkOrder[] = [
     createdAt: '2026-03-20',
     commentsCount: 10,
     attachmentsCount: 2,
+    transitions: [],
     tasks: [
       { id: 'wt-5', assetCode: 'DH123478', assetStatus: 'operative', description: 'Revisión sensor', status: 'pending' },
     ],
@@ -60,6 +62,7 @@ export const mockWorkOrders: WorkOrder[] = [
     createdAt: '2026-03-18',
     commentsCount: 10,
     attachmentsCount: 2,
+    transitions: [],
     tasks: [
       { id: 'wt-6', assetCode: 'EXT001', assetStatus: 'operative', description: 'Verificar presión', status: 'done' },
       { id: 'wt-7', assetCode: 'EXT002', assetStatus: 'operative', description: 'Verificar presión', status: 'in_progress' },
@@ -81,6 +84,7 @@ export const mockWorkOrders: WorkOrder[] = [
     createdAt: '2026-03-19',
     commentsCount: 10,
     attachmentsCount: 2,
+    transitions: [],
     tasks: [],
   },
   {
@@ -99,6 +103,7 @@ export const mockWorkOrders: WorkOrder[] = [
     createdAt: '2026-03-17',
     commentsCount: 10,
     attachmentsCount: 2,
+    transitions: [],
     tasks: [],
   },
   {
@@ -117,6 +122,7 @@ export const mockWorkOrders: WorkOrder[] = [
     createdAt: '2026-03-16',
     commentsCount: 10,
     attachmentsCount: 2,
+    transitions: [],
     tasks: [],
   },
   {
@@ -135,6 +141,7 @@ export const mockWorkOrders: WorkOrder[] = [
     createdAt: '2026-03-15',
     commentsCount: 10,
     attachmentsCount: 2,
+    transitions: [],
     tasks: [
       { id: 'wt-8', assetCode: 'DH123478', assetStatus: 'operative', description: 'Cambio de detector', status: 'done' },
       { id: 'wt-9', assetCode: 'DH123478', assetStatus: 'operative', description: 'Cambio de detector', status: 'done' },
@@ -157,6 +164,7 @@ export const mockWorkOrders: WorkOrder[] = [
     createdAt: '2026-03-10',
     commentsCount: 5,
     attachmentsCount: 3,
+    transitions: [],
     tasks: [
       { id: 'wt-11', assetCode: 'EXT001', assetStatus: 'operative', description: 'Verificar presión', status: 'done' },
       { id: 'wt-12', assetCode: 'EXT002', assetStatus: 'operative', description: 'Verificar sello', status: 'done' },
@@ -178,6 +186,7 @@ export const mockWorkOrders: WorkOrder[] = [
     createdAt: '2026-03-08',
     commentsCount: 8,
     attachmentsCount: 1,
+    transitions: [],
     tasks: [],
   },
 ];

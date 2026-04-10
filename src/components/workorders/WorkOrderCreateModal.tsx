@@ -33,7 +33,7 @@ import { CheckSquare, Settings, User } from 'lucide-react';
 interface WorkOrderCreateModalProps {
   open: boolean;
   onClose: () => void;
-  onCreate: (wo: Omit<WorkOrder, 'id' | 'code' | 'createdAt' | 'commentsCount' | 'attachmentsCount' | 'tasks'>) => void;
+  onCreate: (wo: Omit<WorkOrder, 'id' | 'code' | 'createdAt' | 'commentsCount' | 'attachmentsCount' | 'tasks' | 'transitions'>) => void;
 }
 
 export const WorkOrderCreateModal = ({ open, onClose, onCreate }: WorkOrderCreateModalProps) => {
