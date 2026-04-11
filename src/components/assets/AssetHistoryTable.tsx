@@ -1,14 +1,29 @@
+import { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { AssetHistoryEntry } from '@/types/assetHistory';
 import { assetStatusLabels, assetStatusColors } from '@/types/asset';
+import { getAssetHistoryDetail } from '@/data/mockAssetHistory';
+import AssetHistoryDetailModal from './AssetHistoryDetailModal';
+import { AssetHistoryDetail } from '@/types/assetHistory';
 
 interface AssetHistoryTableProps {
   history: AssetHistoryEntry[];
 }
 
 const AssetHistoryTable = ({ history }: AssetHistoryTableProps) => {
+  const [selectedDetail, setSelectedDetail] = useState<AssetHistoryDetail | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleRowClick = (entryId: string) => {
+    const detail = getAssetHistoryDetail(entryId);
+    if (detail) {
+      setSelectedDetail(detail);
+      setModalOpen(true);
+    }
+  };
+
   if (history.length === 0) {
     return (
       <p className="text-muted-foreground py-8 text-center">
@@ -18,42 +33,54 @@ const AssetHistoryTable = ({ history }: AssetHistoryTableProps) => {
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Codigo de Activo</TableHead>
-          <TableHead>Estado</TableHead>
-          <TableHead>Fecha de cambio</TableHead>
-          <TableHead>Campo</TableHead>
-          <TableHead>Descripción</TableHead>
-          <TableHead className="text-right">Usuario</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {history.map((entry) => (
-          <TableRow key={entry.id}>
-            <TableCell className="font-medium">{entry.assetCode}</TableCell>
-            <TableCell>
-              <Badge className={assetStatusColors[entry.status]}>
-                {assetStatusLabels[entry.status]}
-              </Badge>
-            </TableCell>
-            <TableCell>{entry.changeDate}</TableCell>
-            <TableCell className="text-muted-foreground">{entry.field || ''}</TableCell>
-            <TableCell className="max-w-[200px] text-muted-foreground">{entry.description || ''}</TableCell>
-            <TableCell className="text-right">
-              <div className="flex justify-end">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                    {entry.userInitials}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-            </TableCell>
+    <>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Codigo de Activo</TableHead>
+            <TableHead>Estado</TableHead>
+            <TableHead>Fecha de cambio</TableHead>
+            <TableHead>Campo</TableHead>
+            <TableHead>Descripción</TableHead>
+            <TableHead className="text-right">Usuario</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {history.map((entry) => (
+            <TableRow
+              key={entry.id}
+              className="cursor-pointer"
+              onClick={() => handleRowClick(entry.id)}
+            >
+              <TableCell className="font-medium">{entry.assetCode}</TableCell>
+              <TableCell>
+                <Badge className={assetStatusColors[entry.status]}>
+                  {assetStatusLabels[entry.status]}
+                </Badge>
+              </TableCell>
+              <TableCell>{entry.changeDate}</TableCell>
+              <TableCell className="text-muted-foreground">{entry.field || ''}</TableCell>
+              <TableCell className="max-w-[200px] text-muted-foreground">{entry.description || ''}</TableCell>
+              <TableCell className="text-right">
+                <div className="flex justify-end">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                      {entry.userInitials}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+      <AssetHistoryDetailModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        detail={selectedDetail}
+      />
+    </>
   );
 };
 
