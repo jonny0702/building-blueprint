@@ -1,6 +1,12 @@
 import { BuildingConfig, Location } from '@/types/building';
 
 export const generateLocations = (config: BuildingConfig): Location[] => {
+  const commonAreas = config.commonAreas ?? {
+    electricRoom: false,
+    trashRoom: false,
+    waterRoom: false,
+    emergencyExit: false,
+  };
   const locations: Location[] = [];
   
   // Create building root
@@ -45,7 +51,7 @@ export const generateLocations = (config: BuildingConfig): Location[] => {
 
       // Add common areas to floor
       const commonAreasList = [];
-      if (config.commonAreas.electricRoom) {
+      if (commonAreas.electricRoom) {
         commonAreasList.push({
           id: `tower-${t}-floor-${f}-electric`,
           name: 'Cuarto Eléctrico',
@@ -53,7 +59,7 @@ export const generateLocations = (config: BuildingConfig): Location[] => {
           parentId: floor.id
         });
       }
-      if (config.commonAreas.trashRoom) {
+      if (commonAreas.trashRoom) {
         commonAreasList.push({
           id: `tower-${t}-floor-${f}-trash`,
           name: 'Cuarto de Basura',
@@ -61,7 +67,7 @@ export const generateLocations = (config: BuildingConfig): Location[] => {
           parentId: floor.id
         });
       }
-      if (config.commonAreas.waterRoom) {
+      if (commonAreas.waterRoom) {
         commonAreasList.push({
           id: `tower-${t}-floor-${f}-water`,
           name: 'Cuarto de Agua',
@@ -69,7 +75,7 @@ export const generateLocations = (config: BuildingConfig): Location[] => {
           parentId: floor.id
         });
       }
-      if (config.commonAreas.emergencyExit) {
+      if (commonAreas.emergencyExit) {
         commonAreasList.push({
           id: `tower-${t}-floor-${f}-emergency`,
           name: 'Salida de Emergencia',
