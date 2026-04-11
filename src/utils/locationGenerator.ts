@@ -1,6 +1,12 @@
 import { BuildingConfig, Location } from '@/types/building';
 
 export const generateLocations = (config: BuildingConfig): Location[] => {
+  const commonAreas = config.commonAreas ?? {
+    electricRoom: false,
+    trashRoom: false,
+    waterRoom: false,
+    emergencyExit: false,
+  };
   const locations: Location[] = [];
   
   // Create building root
