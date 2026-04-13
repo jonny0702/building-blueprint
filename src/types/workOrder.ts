@@ -5,6 +5,7 @@ export type ActivityType = 'task' | 'inspection' | 'repair' | 'installation';
 export interface WorkOrderTask {
   id: string;
   assetCode: string;
+  assetId?: string;
   assetStatus: 'operative' | 'maintenance' | 'out_of_service' | 'retired';
   description: string;
   status: 'pending' | 'in_progress' | 'done';

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -11,6 +11,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -22,19 +25,43 @@ import {
   WorkOrder,
   WorkOrderStatus,
   WorkOrderPriority,
+  WorkOrderTask,
   ActivityType,
   activityTypeLabels,
   workOrderPriorityLabels,
   workOrderStatusLabels,
   assetCategoryOptions,
 } from '@/types/workOrder';
-import { CheckSquare, Settings, User } from 'lucide-react';
+import { Asset, LocationWithAssets } from '@/types/asset';
+import { mockLocationWithAssets } from '@/data/mockAssets';
+import { CheckSquare, Settings, User, X } from 'lucide-react';
 
 interface WorkOrderCreateModalProps {
   open: boolean;
   onClose: () => void;
-  onCreate: (wo: Omit<WorkOrder, 'id' | 'code' | 'createdAt' | 'commentsCount' | 'attachmentsCount' | 'tasks' | 'transitions'>) => void;
+  onCreate: (wo: Omit<WorkOrder, 'id' | 'code' | 'createdAt' | 'commentsCount' | 'attachmentsCount' | 'transitions'>) => void;
 }
+
+// Helper: get towers from the building tree
+const getTowers = (root: LocationWithAssets): LocationWithAssets[] => {
+  return root.children?.filter((c) => c.type === 'tower') ?? [];
+};
+
+// Helper: get floors from a tower
+const getFloors = (tower: LocationWithAssets): LocationWithAssets[] => {
+  return tower.children?.filter((c) => c.type === 'floor') ?? [];
+};
+
+// Helper: get all assets from a floor
+const getAssetsFromFloor = (floor: LocationWithAssets): Asset[] => {
+  const assets: Asset[] = [];
+  if (floor.assetCategories) {
+    for (const cat of floor.assetCategories) {
+      assets.push(...cat.assets);
+    }
+  }
+  return assets;
+};
 
 export const WorkOrderCreateModal = ({ open, onClose, onCreate }: WorkOrderCreateModalProps) => {
   const [status, setStatus] = useState<WorkOrderStatus>('todo');
@@ -45,6 +72,70 @@ export const WorkOrderCreateModal = ({ open, onClose, onCreate }: WorkOrderCreat
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
+
+  // Asset linking
+  const [linkAssets, setLinkAssets] = useState(false);
+  const [selectedTowerId, setSelectedTowerId] = useState('');
+  const [selectedFloorId, setSelectedFloorId] = useState('');
+  const [selectedAssetIds, setSelectedAssetIds] = useState<Set<string>>(new Set());
+
+  const towers = useMemo(() => getTowers(mockLocationWithAssets), []);
+
+  const floors = useMemo(() => {
+    if (!selectedTowerId) return [];
+    const tower = towers.find((t) => t.id === selectedTowerId);
+    return tower ? getFloors(tower) : [];
+  }, [selectedTowerId, towers]);
+
+  const availableAssets = useMemo(() => {
+    if (!selectedFloorId) return [];
+    const tower = towers.find((t) => t.id === selectedTowerId);
+    if (!tower) return [];
+    const floor = tower.children?.find((f) => f.id === selectedFloorId);
+    if (!floor) return [];
+    return getAssetsFromFloor(floor);
+  }, [selectedTowerId, selectedFloorId, towers]);
+
+  const toggleAsset = (assetId: string) => {
+    setSelectedAssetIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(assetId)) next.delete(assetId);
+      else next.add(assetId);
+      return next;
+    });
+  };
+
+  const removeAsset = (assetId: string) => {
+    setSelectedAssetIds((prev) => {
+      const next = new Set(prev);
+      next.delete(assetId);
+      return next;
+    });
+  };
+
+  // Collect all selected assets across all filters for display
+  const allSelectedAssets = useMemo(() => {
+    const allAssets: Asset[] = [];
+    for (const tower of towers) {
+      for (const floor of getFloors(tower)) {
+        for (const asset of getAssetsFromFloor(floor)) {
+          if (selectedAssetIds.has(asset.id)) allAssets.push(asset);
+        }
+      }
+    }
+    return allAssets;
+  }, [selectedAssetIds, towers]);
+
+  const buildTasks = (): WorkOrderTask[] => {
+    return allSelectedAssets.map((asset) => ({
+      id: `task-${asset.id}-${Date.now()}`,
+      assetCode: asset.code,
+      assetId: asset.id,
+      assetStatus: asset.status,
+      description: title || 'Tarea pendiente',
+      status: 'pending' as const,
+    }));
+  };
 
   const handleSubmit = () => {
     if (!title || !description || !assignedTo || !assetCategory || !dueDate) return;
@@ -59,6 +150,7 @@ export const WorkOrderCreateModal = ({ open, onClose, onCreate }: WorkOrderCreat
       reporter: 'PH Brisas de Miraflores',
       location: '',
       dueDate,
+      tasks: linkAssets ? buildTasks() : [],
     });
     resetForm();
     onClose();
@@ -73,13 +165,17 @@ export const WorkOrderCreateModal = ({ open, onClose, onCreate }: WorkOrderCreat
     setTitle('');
     setDescription('');
     setDueDate('');
+    setLinkAssets(false);
+    setSelectedTowerId('');
+    setSelectedFloorId('');
+    setSelectedAssetIds(new Set());
   };
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Crear tipo de orden de trabajo</DialogTitle>
+          <DialogTitle>Crear Orden de Trabajo</DialogTitle>
           <DialogDescription>Los campos obligatorios están marcados con un asterisco</DialogDescription>
         </DialogHeader>
 
@@ -159,6 +255,108 @@ export const WorkOrderCreateModal = ({ open, onClose, onCreate }: WorkOrderCreat
               </Select>
             </div>
           </div>
+
+          {/* Switch: Vincular assets individualmente */}
+          <div className="flex items-center justify-between border rounded-lg p-3">
+            <div>
+              <Label className="text-sm font-medium">Vincular activos como subtareas</Label>
+              <p className="text-xs text-muted-foreground">Selecciona activos específicos para esta orden</p>
+            </div>
+            <Switch checked={linkAssets} onCheckedChange={setLinkAssets} />
+          </div>
+
+          {/* Asset selector */}
+          {linkAssets && (
+            <div className="border rounded-lg p-3 space-y-3 bg-muted/30">
+              <div className="grid grid-cols-2 gap-3">
+                {/* Torre */}
+                <div>
+                  <Label className="text-xs">Torre</Label>
+                  <Select
+                    value={selectedTowerId}
+                    onValueChange={(v) => {
+                      setSelectedTowerId(v);
+                      setSelectedFloorId('');
+                    }}
+                  >
+                    <SelectTrigger><SelectValue placeholder="Seleccionar torre" /></SelectTrigger>
+                    <SelectContent>
+                      {towers.map((t) => (
+                        <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {/* Piso */}
+                <div>
+                  <Label className="text-xs">Piso</Label>
+                  <Select
+                    value={selectedFloorId}
+                    onValueChange={setSelectedFloorId}
+                    disabled={!selectedTowerId}
+                  >
+                    <SelectTrigger><SelectValue placeholder="Seleccionar piso" /></SelectTrigger>
+                    <SelectContent>
+                      {floors.map((f) => (
+                        <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Asset list */}
+              {selectedFloorId && (
+                <div className="space-y-1">
+                  <Label className="text-xs">Activos disponibles</Label>
+                  {availableAssets.length === 0 ? (
+                    <p className="text-xs text-muted-foreground py-2">No hay activos en esta ubicación.</p>
+                  ) : (
+                    <div className="max-h-[140px] overflow-y-auto space-y-1 border rounded-md p-2 bg-background">
+                      {availableAssets.map((asset) => (
+                        <label
+                          key={asset.id}
+                          className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-muted cursor-pointer text-sm"
+                        >
+                          <Checkbox
+                            checked={selectedAssetIds.has(asset.id)}
+                            onCheckedChange={() => toggleAsset(asset.id)}
+                          />
+                          <span className="font-mono text-xs">{asset.code}</span>
+                          <span className="text-muted-foreground text-xs">—</span>
+                          <span className="text-xs truncate">{asset.name}</span>
+                          <Badge variant="outline" className="ml-auto text-[10px] bg-green-100 text-green-700 border-green-200">
+                            {asset.status === 'operative' ? 'Operativo' : asset.status}
+                          </Badge>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Selected chips */}
+              {allSelectedAssets.length > 0 && (
+                <div>
+                  <Label className="text-xs">Activos seleccionados ({allSelectedAssets.length})</Label>
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    {allSelectedAssets.map((a) => (
+                      <Badge key={a.id} variant="secondary" className="gap-1 pr-1">
+                        {a.code}
+                        <button
+                          type="button"
+                          onClick={() => removeAsset(a.id)}
+                          className="ml-0.5 rounded-full hover:bg-muted-foreground/20 p-0.5"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Resumen */}
           <div>

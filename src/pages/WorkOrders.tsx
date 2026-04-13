@@ -93,7 +93,7 @@ const WorkOrders = () => {
     setPendingTransition(null);
   };
 
-  const handleCreate = (data: Omit<WorkOrder, 'id' | 'code' | 'createdAt' | 'commentsCount' | 'attachmentsCount' | 'tasks' | 'transitions'>) => {
+  const handleCreate = (data: Omit<WorkOrder, 'id' | 'code' | 'createdAt' | 'commentsCount' | 'attachmentsCount' | 'transitions'>) => {
     const newWO: WorkOrder = {
       ...data,
       id: `wo-${Date.now()}`,
@@ -101,7 +101,6 @@ const WorkOrders = () => {
       createdAt: new Date().toISOString().split('T')[0],
       commentsCount: 0,
       attachmentsCount: 0,
-      tasks: [],
       transitions: [],
     };
     setWorkOrders((prev) => [newWO, ...prev]);

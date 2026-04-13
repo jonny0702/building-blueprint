@@ -33,8 +33,9 @@ import {
   workOrderPriorityLabels,
   workOrderPriorityColors,
 } from '@/types/workOrder';
-import { Settings, Calendar, ChevronDown, User, MessageSquare, ArrowRight } from 'lucide-react';
+import { Settings, Calendar, ChevronDown, User, MessageSquare, ArrowRight, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface WorkOrderDetailModalProps {
   workOrder: WorkOrder | null;
@@ -71,12 +72,20 @@ export const WorkOrderDetailModal = ({
   const [detailsOpen, setDetailsOpen] = useState(true);
   const [tasksOpen, setTasksOpen] = useState(true);
   const [historyOpen, setHistoryOpen] = useState(true);
+  const navigate = useNavigate();
 
   if (!workOrder) return null;
 
   const formatDate = (iso: string) => {
     const d = new Date(iso);
     return d.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  };
+
+  const handleTaskClick = (task: typeof workOrder.tasks[0]) => {
+    if (task.assetId) {
+      onClose();
+      navigate(`/activos/${task.assetId}`);
+    }
   };
 
   return (
@@ -128,7 +137,7 @@ export const WorkOrderDetailModal = ({
               <Collapsible open={tasksOpen} onOpenChange={setTasksOpen}>
                 <CollapsibleTrigger className="flex items-center gap-1 font-semibold text-sm hover:text-primary transition-colors">
                   <ChevronDown className={`w-4 h-4 transition-transform ${tasksOpen ? '' : '-rotate-90'}`} />
-                  Tareas
+                  Tareas ({workOrder.tasks.length})
                 </CollapsibleTrigger>
                 <CollapsibleContent className="pt-2">
                   <div className="border rounded-lg overflow-hidden">
@@ -139,11 +148,16 @@ export const WorkOrderDetailModal = ({
                           <TableHead className="text-xs">Estado - Activo</TableHead>
                           <TableHead className="text-xs">Descripción</TableHead>
                           <TableHead className="text-xs">Estado</TableHead>
+                          <TableHead className="text-xs w-[40px]"></TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {workOrder.tasks.map((task) => (
-                          <TableRow key={task.id}>
+                          <TableRow
+                            key={task.id}
+                            className={task.assetId ? 'cursor-pointer hover:bg-muted/50' : ''}
+                            onClick={() => handleTaskClick(task)}
+                          >
                             <TableCell className="text-xs font-medium">{task.assetCode}</TableCell>
                             <TableCell>
                               <Badge variant="outline" className="text-[10px] bg-green-100 text-green-700 border-green-200">
@@ -155,6 +169,11 @@ export const WorkOrderDetailModal = ({
                               <Badge variant="outline" className={`text-[10px] ${taskStatusColors[task.status]}`}>
                                 {taskStatusLabels[task.status]}
                               </Badge>
+                            </TableCell>
+                            <TableCell>
+                              {task.assetId && (
+                                <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
+                              )}
                             </TableCell>
                           </TableRow>
                         ))}
