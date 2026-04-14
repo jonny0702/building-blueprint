@@ -106,6 +106,21 @@ const WorkOrders = () => {
     setWorkOrders((prev) => [newWO, ...prev]);
   };
 
+  const handleTaskStatusChange = (woId: string, taskId: string, newStatus: 'pending' | 'in_progress' | 'done') => {
+    setWorkOrders((prev) =>
+      prev.map((wo) =>
+        wo.id === woId
+          ? { ...wo, tasks: wo.tasks.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t)) }
+          : wo
+      )
+    );
+    if (selectedWO?.id === woId) {
+      setSelectedWO((prev) =>
+        prev ? { ...prev, tasks: prev.tasks.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t)) } : null
+      );
+    }
+  };
+
   const handleCardClick = (wo: WorkOrder) => {
     setSelectedWO(wo);
     setDetailOpen(true);
@@ -141,7 +156,7 @@ const WorkOrders = () => {
       )}
 
       <WorkOrderCreateModal open={createOpen} onClose={() => setCreateOpen(false)} onCreate={handleCreate} />
-      <WorkOrderDetailModal workOrder={selectedWO} open={detailOpen} onClose={() => setDetailOpen(false)} onStatusChange={handleStatusChange} />
+      <WorkOrderDetailModal workOrder={selectedWO} open={detailOpen} onClose={() => setDetailOpen(false)} onStatusChange={handleStatusChange} onTaskStatusChange={handleTaskStatusChange} />
       <WorkOrderCertificationModal
         open={certModalOpen}
         workOrderTitle={workOrders.find((wo) => wo.id === pendingCertWoId)?.title}
