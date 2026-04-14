@@ -69,6 +69,7 @@ export const WorkOrderDetailModal = ({
   open,
   onClose,
   onStatusChange,
+  onTaskStatusChange,
 }: WorkOrderDetailModalProps) => {
   const [detailsOpen, setDetailsOpen] = useState(true);
   const [tasksOpen, setTasksOpen] = useState(true);
