@@ -167,10 +167,20 @@ export const WorkOrderDetailModal = ({
                               </Badge>
                             </TableCell>
                             <TableCell className="text-xs">{task.description}</TableCell>
-                            <TableCell>
-                              <Badge variant="outline" className={`text-[10px] ${taskStatusColors[task.status]}`}>
-                                {taskStatusLabels[task.status]}
-                              </Badge>
+                            <TableCell onClick={(e) => e.stopPropagation()}>
+                              <Select
+                                value={task.status}
+                                onValueChange={(v) => onTaskStatusChange?.(workOrder.id, task.id, v as 'pending' | 'in_progress' | 'done')}
+                              >
+                                <SelectTrigger className={`h-7 w-auto gap-1 border text-[10px] font-semibold px-2 ${taskStatusColors[task.status]}`}>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {Object.entries(taskStatusLabels).map(([k, v]) => (
+                                    <SelectItem key={k} value={k} className="text-xs">{v}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                             </TableCell>
                             <TableCell>
                               {task.assetId && (
