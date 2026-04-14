@@ -42,6 +42,7 @@ interface WorkOrderDetailModalProps {
   open: boolean;
   onClose: () => void;
   onStatusChange: (woId: string, newStatus: WorkOrderStatus) => void;
+  onTaskStatusChange?: (woId: string, taskId: string, newStatus: 'pending' | 'in_progress' | 'done') => void;
 }
 
 const taskStatusLabels: Record<string, string> = {
