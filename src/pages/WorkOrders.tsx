@@ -156,7 +156,7 @@ const WorkOrders = () => {
       )}
 
       <WorkOrderCreateModal open={createOpen} onClose={() => setCreateOpen(false)} onCreate={handleCreate} />
-      <WorkOrderDetailModal workOrder={selectedWO} open={detailOpen} onClose={() => setDetailOpen(false)} onStatusChange={handleStatusChange} />
+      <WorkOrderDetailModal workOrder={selectedWO} open={detailOpen} onClose={() => setDetailOpen(false)} onStatusChange={handleStatusChange} onTaskStatusChange={handleTaskStatusChange} />
       <WorkOrderCertificationModal
         open={certModalOpen}
         workOrderTitle={workOrders.find((wo) => wo.id === pendingCertWoId)?.title}
