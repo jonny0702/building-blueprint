@@ -86,20 +86,23 @@ export const useEditableAssetTree = (initial: LocationWithAssets) => {
     });
   }, [mutate]);
 
-  const addCategory = useCallback((locationId: string) => {
-    mutate(draft => {
-      const loc = findLocation(draft, locationId);
-      if (!loc) return;
-      if (!loc.assetCategories) loc.assetCategories = [];
-      loc.assetCategories.push({
-        id: uid('cat'),
-        name: 'Nueva Categoría',
-        icon: 'shield',
-        assets: [],
+  const addCategory = useCallback(
+    (locationId: string, data?: { name?: string; icon?: string }) => {
+      mutate(draft => {
+        const loc = findLocation(draft, locationId);
+        if (!loc) return;
+        if (!loc.assetCategories) loc.assetCategories = [];
+        loc.assetCategories.push({
+          id: uid('cat'),
+          name: data?.name?.trim() || 'Nueva Categoría',
+          icon: data?.icon || 'shield',
+          assets: [],
+        });
       });
-    });
-    toast({ title: 'Categoría agregada' });
-  }, [mutate, toast]);
+      toast({ title: 'Categoría agregada', description: data?.name });
+    },
+    [mutate, toast]
+  );
 
   const deleteCategory = useCallback((categoryId: string, locationId: string) => {
     mutate(draft => {
