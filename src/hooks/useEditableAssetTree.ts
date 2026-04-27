@@ -209,6 +209,19 @@ export const useEditableAssetTree = (initial: LocationWithAssets) => {
     [tree]
   );
 
+  const getAsset = useCallback(
+    (assetId: string) => findAssetInTree(tree, assetId),
+    [tree]
+  );
+
+  const getCategory = useCallback(
+    (categoryId: string, locationId: string) => {
+      const loc = findLocation(tree, locationId);
+      return loc?.assetCategories?.find(c => c.id === categoryId) ?? null;
+    },
+    [tree]
+  );
+
   return {
     tree,
     addLocation,
