@@ -5,6 +5,13 @@ import { AssetTree } from '@/components/assets/AssetTree';
 import { Input } from '@/components/ui/input';
 import { mockLocationWithAssets } from '@/data/mockAssets';
 import { useEditableAssetTree } from '@/hooks/useEditableAssetTree';
+import { CategoryPickerModal, CategorySelection } from '@/components/assets/CategoryPickerModal';
+import { DeleteConfirmModal, DeleteTargetKind } from '@/components/assets/DeleteConfirmModal';
+
+type DeleteTarget =
+  | { kind: 'location'; id: string; name: string; childCount: number }
+  | { kind: 'category'; id: string; locationId: string; name: string; childCount: number }
+  | { kind: 'asset'; id: string; categoryId: string; locationId: string; name: string };
 
 const Assets = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -19,7 +26,76 @@ const Assets = () => {
     addAsset,
     deleteAsset,
     renameAsset,
+    getLocation,
+    getCategory,
+    getAsset,
+    getCategoryNamesIn,
+    countLocationDescendants,
+    countCategoryAssets,
   } = useEditableAssetTree(mockLocationWithAssets);
+
+  // Modal state: agregar categoría
+  const [categoryPicker, setCategoryPicker] = useState<{ locationId: string } | null>(null);
+
+  // Modal state: confirmar eliminación
+  const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
+
+  // ----- Handlers de creación de categoría -----
+  const handleOpenCategoryPicker = (locationId: string) => {
+    setCategoryPicker({ locationId });
+  };
+
+  const handleConfirmCategory = (selection: CategorySelection) => {
+    if (!categoryPicker) return;
+    addCategory(categoryPicker.locationId, selection);
+    setCategoryPicker(null);
+  };
+
+  // ----- Handlers de eliminación con confirmación -----
+  const handleRequestDeleteLocation = (locationId: string) => {
+    const loc = getLocation(locationId);
+    if (!loc) return;
+    setDeleteTarget({
+      kind: 'location',
+      id: locationId,
+      name: loc.name,
+      childCount: countLocationDescendants(locationId),
+    });
+  };
+
+  const handleRequestDeleteCategory = (categoryId: string, locationId: string) => {
+    const cat = getCategory(categoryId, locationId);
+    if (!cat) return;
+    setDeleteTarget({
+      kind: 'category',
+      id: categoryId,
+      locationId,
+      name: cat.name,
+      childCount: countCategoryAssets(categoryId, locationId),
+    });
+  };
+
+  const handleRequestDeleteAsset = (assetId: string, categoryId: string, locationId: string) => {
+    const asset = getAsset(assetId);
+    if (!asset) return;
+    setDeleteTarget({
+      kind: 'asset',
+      id: assetId,
+      categoryId,
+      locationId,
+      name: asset.name,
+    });
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deleteTarget) return;
+    if (deleteTarget.kind === 'location') deleteLocation(deleteTarget.id);
+    else if (deleteTarget.kind === 'category') deleteCategory(deleteTarget.id, deleteTarget.locationId);
+    else deleteAsset(deleteTarget.id, deleteTarget.categoryId, deleteTarget.locationId);
+    setDeleteTarget(null);
+  };
+
+  const pickerLocation = categoryPicker ? getLocation(categoryPicker.locationId) : null;
 
   return (
     <MainLayout title="Activos" organizationName="PH. Brisas de Miraflores">
@@ -39,16 +115,37 @@ const Assets = () => {
           tree={tree}
           searchTerm={searchTerm}
           onAddLocation={addLocation}
-          onDeleteLocation={deleteLocation}
+          onDeleteLocation={handleRequestDeleteLocation}
           onRenameLocation={renameLocation}
-          onAddCategory={addCategory}
-          onDeleteCategory={deleteCategory}
+          onAddCategory={handleOpenCategoryPicker}
+          onDeleteCategory={handleRequestDeleteCategory}
           onRenameCategory={renameCategory}
           onAddAsset={addAsset}
-          onDeleteAsset={deleteAsset}
+          onDeleteAsset={handleRequestDeleteAsset}
           onRenameAsset={renameAsset}
         />
       </div>
+
+      <CategoryPickerModal
+        open={!!categoryPicker}
+        onClose={() => setCategoryPicker(null)}
+        onConfirm={handleConfirmCategory}
+        locationName={pickerLocation?.name}
+        existingCategoryNames={
+          categoryPicker ? getCategoryNamesIn(categoryPicker.locationId) : []
+        }
+      />
+
+      <DeleteConfirmModal
+        open={!!deleteTarget}
+        kind={(deleteTarget?.kind ?? 'asset') as DeleteTargetKind}
+        itemName={deleteTarget?.name ?? ''}
+        childCount={
+          deleteTarget && 'childCount' in deleteTarget ? deleteTarget.childCount : 0
+        }
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={handleConfirmDelete}
+      />
     </MainLayout>
   );
 };
