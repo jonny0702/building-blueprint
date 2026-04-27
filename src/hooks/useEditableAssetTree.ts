@@ -165,6 +165,50 @@ export const useEditableAssetTree = (initial: LocationWithAssets) => {
     });
   }, [mutate]);
 
+  // ---- Lookup helpers (read-only) ----
+
+  const getLocation = useCallback(
+    (locationId: string) => findLocation(tree, locationId),
+    [tree]
+  );
+
+  const getCategoryNamesIn = useCallback(
+    (locationId: string): string[] => {
+      const loc = findLocation(tree, locationId);
+      return loc?.assetCategories?.map(c => c.name) ?? [];
+    },
+    [tree]
+  );
+
+  const countLocationDescendants = useCallback(
+    (locationId: string): number => {
+      const loc = findLocation(tree, locationId);
+      if (!loc) return 0;
+      let count = 0;
+      const walk = (node: typeof loc) => {
+        for (const child of node.children || []) {
+          count += 1;
+          walk(child);
+        }
+        for (const cat of node.assetCategories || []) {
+          count += 1 + cat.assets.length;
+        }
+      };
+      walk(loc);
+      return count;
+    },
+    [tree]
+  );
+
+  const countCategoryAssets = useCallback(
+    (categoryId: string, locationId: string): number => {
+      const loc = findLocation(tree, locationId);
+      const cat = loc?.assetCategories?.find(c => c.id === categoryId);
+      return cat?.assets.length ?? 0;
+    },
+    [tree]
+  );
+
   return {
     tree,
     addLocation,
@@ -176,5 +220,10 @@ export const useEditableAssetTree = (initial: LocationWithAssets) => {
     addAsset,
     deleteAsset,
     renameAsset,
+    // helpers
+    getLocation,
+    getCategoryNamesIn,
+    countLocationDescendants,
+    countCategoryAssets,
   };
 };
