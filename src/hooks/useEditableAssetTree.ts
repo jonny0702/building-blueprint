@@ -86,20 +86,23 @@ export const useEditableAssetTree = (initial: LocationWithAssets) => {
     });
   }, [mutate]);
 
-  const addCategory = useCallback((locationId: string) => {
-    mutate(draft => {
-      const loc = findLocation(draft, locationId);
-      if (!loc) return;
-      if (!loc.assetCategories) loc.assetCategories = [];
-      loc.assetCategories.push({
-        id: uid('cat'),
-        name: 'Nueva Categoría',
-        icon: 'shield',
-        assets: [],
+  const addCategory = useCallback(
+    (locationId: string, data?: { name?: string; icon?: string }) => {
+      mutate(draft => {
+        const loc = findLocation(draft, locationId);
+        if (!loc) return;
+        if (!loc.assetCategories) loc.assetCategories = [];
+        loc.assetCategories.push({
+          id: uid('cat'),
+          name: data?.name?.trim() || 'Nueva Categoría',
+          icon: data?.icon || 'shield',
+          assets: [],
+        });
       });
-    });
-    toast({ title: 'Categoría agregada' });
-  }, [mutate, toast]);
+      toast({ title: 'Categoría agregada', description: data?.name });
+    },
+    [mutate, toast]
+  );
 
   const deleteCategory = useCallback((categoryId: string, locationId: string) => {
     mutate(draft => {
@@ -162,6 +165,63 @@ export const useEditableAssetTree = (initial: LocationWithAssets) => {
     });
   }, [mutate]);
 
+  // ---- Lookup helpers (read-only) ----
+
+  const getLocation = useCallback(
+    (locationId: string) => findLocation(tree, locationId),
+    [tree]
+  );
+
+  const getCategoryNamesIn = useCallback(
+    (locationId: string): string[] => {
+      const loc = findLocation(tree, locationId);
+      return loc?.assetCategories?.map(c => c.name) ?? [];
+    },
+    [tree]
+  );
+
+  const countLocationDescendants = useCallback(
+    (locationId: string): number => {
+      const loc = findLocation(tree, locationId);
+      if (!loc) return 0;
+      let count = 0;
+      const walk = (node: typeof loc) => {
+        for (const child of node.children || []) {
+          count += 1;
+          walk(child);
+        }
+        for (const cat of node.assetCategories || []) {
+          count += 1 + cat.assets.length;
+        }
+      };
+      walk(loc);
+      return count;
+    },
+    [tree]
+  );
+
+  const countCategoryAssets = useCallback(
+    (categoryId: string, locationId: string): number => {
+      const loc = findLocation(tree, locationId);
+      const cat = loc?.assetCategories?.find(c => c.id === categoryId);
+      return cat?.assets.length ?? 0;
+    },
+    [tree]
+  );
+
+  const getAsset = useCallback(
+    (assetId: string) => findAssetInTree(tree, assetId),
+    [tree]
+  );
+
+  const getCategory = useCallback(
+    (categoryId: string, locationId: string) => {
+      const loc = findLocation(tree, locationId);
+      return loc?.assetCategories?.find(c => c.id === categoryId) ?? null;
+    },
+    [tree]
+  );
+
   return {
     tree,
     addLocation,
@@ -173,5 +233,12 @@ export const useEditableAssetTree = (initial: LocationWithAssets) => {
     addAsset,
     deleteAsset,
     renameAsset,
+    // helpers
+    getLocation,
+    getCategory,
+    getAsset,
+    getCategoryNamesIn,
+    countLocationDescendants,
+    countCategoryAssets,
   };
 };
