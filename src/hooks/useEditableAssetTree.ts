@@ -235,6 +235,8 @@ export const useEditableAssetTree = (initial: LocationWithAssets) => {
     renameAsset,
     // helpers
     getLocation,
+    getCategory,
+    getAsset,
     getCategoryNamesIn,
     countLocationDescendants,
     countCategoryAssets,
