@@ -31,7 +31,6 @@ const Assets = () => {
     getCategory,
     getAsset,
     getCategoryNamesIn,
-    getCategoryNamesIn,
     getChildLocationNamesIn,
     countLocationDescendants,
     countCategoryAssets,
