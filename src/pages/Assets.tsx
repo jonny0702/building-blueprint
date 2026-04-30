@@ -100,7 +100,19 @@ const Assets = () => {
     setDeleteTarget(null);
   };
 
+  // ----- Handlers de creación de ubicación -----
+  const handleOpenLocationPicker = (parentId: string) => {
+    setLocationPicker({ parentId });
+  };
+
+  const handleConfirmLocation = (selection: LocationSelection) => {
+    if (!locationPicker) return;
+    addLocation(locationPicker.parentId, selection);
+    setLocationPicker(null);
+  };
+
   const pickerLocation = categoryPicker ? getLocation(categoryPicker.locationId) : null;
+  const parentLocation = locationPicker ? getLocation(locationPicker.parentId) : null;
 
   return (
     <MainLayout title="Activos" organizationName="PH. Brisas de Miraflores">
