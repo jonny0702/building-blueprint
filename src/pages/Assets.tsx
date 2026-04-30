@@ -7,6 +7,7 @@ import { mockLocationWithAssets } from '@/data/mockAssets';
 import { useEditableAssetTree } from '@/hooks/useEditableAssetTree';
 import { CategoryPickerModal, CategorySelection } from '@/components/assets/CategoryPickerModal';
 import { DeleteConfirmModal, DeleteTargetKind } from '@/components/assets/DeleteConfirmModal';
+import { LocationPickerModal, LocationSelection } from '@/components/assets/LocationPickerModal';
 
 type DeleteTarget =
   | { kind: 'location'; id: string; name: string; childCount: number }
