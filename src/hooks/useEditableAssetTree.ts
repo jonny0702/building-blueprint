@@ -183,6 +183,14 @@ export const useEditableAssetTree = (initial: LocationWithAssets) => {
     [tree]
   );
 
+  const getChildLocationNamesIn = useCallback(
+    (locationId: string): string[] => {
+      const loc = findLocation(tree, locationId);
+      return loc?.children?.map(c => c.name) ?? [];
+    },
+    [tree]
+  );
+
   const countLocationDescendants = useCallback(
     (locationId: string): number => {
       const loc = findLocation(tree, locationId);
