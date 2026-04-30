@@ -31,9 +31,14 @@ const Assets = () => {
     getCategory,
     getAsset,
     getCategoryNamesIn,
+    getCategoryNamesIn,
+    getChildLocationNamesIn,
     countLocationDescendants,
     countCategoryAssets,
   } = useEditableAssetTree(mockLocationWithAssets);
+
+  // Modal state: agregar ubicación
+  const [locationPicker, setLocationPicker] = useState<{ parentId: string } | null>(null);
 
   // Modal state: agregar categoría
   const [categoryPicker, setCategoryPicker] = useState<{ locationId: string } | null>(null);
