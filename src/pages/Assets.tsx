@@ -131,7 +131,7 @@ const Assets = () => {
         <AssetTree
           tree={tree}
           searchTerm={searchTerm}
-          onAddLocation={addLocation}
+          onAddLocation={handleOpenLocationPicker}
           onDeleteLocation={handleRequestDeleteLocation}
           onRenameLocation={renameLocation}
           onAddCategory={handleOpenCategoryPicker}
