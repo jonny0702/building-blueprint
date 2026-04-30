@@ -153,6 +153,17 @@ const Assets = () => {
         }
       />
 
+      <LocationPickerModal
+        open={!!locationPicker}
+        onClose={() => setLocationPicker(null)}
+        onConfirm={handleConfirmLocation}
+        parentName={parentLocation?.name}
+        parentType={parentLocation?.type}
+        existingNames={
+          locationPicker ? getChildLocationNamesIn(locationPicker.parentId) : []
+        }
+      />
+
       <DeleteConfirmModal
         open={!!deleteTarget}
         kind={(deleteTarget?.kind ?? 'asset') as DeleteTargetKind}
