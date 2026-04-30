@@ -55,24 +55,27 @@ export const useEditableAssetTree = (initial: LocationWithAssets) => {
     });
   }, []);
 
-  const addLocation = useCallback((parentId: string) => {
-    mutate(draft => {
-      const parent = findLocation(draft, parentId);
-      if (!parent) return;
-      if (!parent.children) parent.children = [];
-      const newLoc: LocationWithAssets = {
-        id: uid('loc'),
-        name: 'Nueva Ubicación',
-        code: '',
-        type: 'area',
-        parentId,
-        children: [],
-        assetCategories: [],
-      };
-      parent.children.push(newLoc);
-    });
-    toast({ title: 'Ubicación agregada' });
-  }, [mutate, toast]);
+  const addLocation = useCallback(
+    (parentId: string, data?: { name?: string; type?: LocationWithAssets['type'] }) => {
+      mutate(draft => {
+        const parent = findLocation(draft, parentId);
+        if (!parent) return;
+        if (!parent.children) parent.children = [];
+        const newLoc: LocationWithAssets = {
+          id: uid('loc'),
+          name: data?.name?.trim() || 'Nueva Ubicación',
+          code: '',
+          type: data?.type ?? 'area',
+          parentId,
+          children: [],
+          assetCategories: [],
+        };
+        parent.children.push(newLoc);
+      });
+      toast({ title: 'Ubicación agregada', description: data?.name });
+    },
+    [mutate, toast]
+  );
 
   const deleteLocation = useCallback((locationId: string) => {
     mutate(draft => { removeChildLocation(draft, locationId); });
@@ -180,6 +183,14 @@ export const useEditableAssetTree = (initial: LocationWithAssets) => {
     [tree]
   );
 
+  const getChildLocationNamesIn = useCallback(
+    (locationId: string): string[] => {
+      const loc = findLocation(tree, locationId);
+      return loc?.children?.map(c => c.name) ?? [];
+    },
+    [tree]
+  );
+
   const countLocationDescendants = useCallback(
     (locationId: string): number => {
       const loc = findLocation(tree, locationId);
@@ -238,6 +249,7 @@ export const useEditableAssetTree = (initial: LocationWithAssets) => {
     getCategory,
     getAsset,
     getCategoryNamesIn,
+    getChildLocationNamesIn,
     countLocationDescendants,
     countCategoryAssets,
   };

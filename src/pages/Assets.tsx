@@ -7,6 +7,7 @@ import { mockLocationWithAssets } from '@/data/mockAssets';
 import { useEditableAssetTree } from '@/hooks/useEditableAssetTree';
 import { CategoryPickerModal, CategorySelection } from '@/components/assets/CategoryPickerModal';
 import { DeleteConfirmModal, DeleteTargetKind } from '@/components/assets/DeleteConfirmModal';
+import { LocationPickerModal, LocationSelection } from '@/components/assets/LocationPickerModal';
 
 type DeleteTarget =
   | { kind: 'location'; id: string; name: string; childCount: number }
@@ -30,9 +31,13 @@ const Assets = () => {
     getCategory,
     getAsset,
     getCategoryNamesIn,
+    getChildLocationNamesIn,
     countLocationDescendants,
     countCategoryAssets,
   } = useEditableAssetTree(mockLocationWithAssets);
+
+  // Modal state: agregar ubicación
+  const [locationPicker, setLocationPicker] = useState<{ parentId: string } | null>(null);
 
   // Modal state: agregar categoría
   const [categoryPicker, setCategoryPicker] = useState<{ locationId: string } | null>(null);
@@ -95,7 +100,19 @@ const Assets = () => {
     setDeleteTarget(null);
   };
 
+  // ----- Handlers de creación de ubicación -----
+  const handleOpenLocationPicker = (parentId: string) => {
+    setLocationPicker({ parentId });
+  };
+
+  const handleConfirmLocation = (selection: LocationSelection) => {
+    if (!locationPicker) return;
+    addLocation(locationPicker.parentId, selection);
+    setLocationPicker(null);
+  };
+
   const pickerLocation = categoryPicker ? getLocation(categoryPicker.locationId) : null;
+  const parentLocation = locationPicker ? getLocation(locationPicker.parentId) : null;
 
   return (
     <MainLayout title="Activos" organizationName="PH. Brisas de Miraflores">
@@ -114,7 +131,7 @@ const Assets = () => {
         <AssetTree
           tree={tree}
           searchTerm={searchTerm}
-          onAddLocation={addLocation}
+          onAddLocation={handleOpenLocationPicker}
           onDeleteLocation={handleRequestDeleteLocation}
           onRenameLocation={renameLocation}
           onAddCategory={handleOpenCategoryPicker}
@@ -133,6 +150,17 @@ const Assets = () => {
         locationName={pickerLocation?.name}
         existingCategoryNames={
           categoryPicker ? getCategoryNamesIn(categoryPicker.locationId) : []
+        }
+      />
+
+      <LocationPickerModal
+        open={!!locationPicker}
+        onClose={() => setLocationPicker(null)}
+        onConfirm={handleConfirmLocation}
+        parentName={parentLocation?.name}
+        parentType={parentLocation?.type}
+        existingNames={
+          locationPicker ? getChildLocationNamesIn(locationPicker.parentId) : []
         }
       />
 
