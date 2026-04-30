@@ -249,6 +249,7 @@ export const useEditableAssetTree = (initial: LocationWithAssets) => {
     getCategory,
     getAsset,
     getCategoryNamesIn,
+    getChildLocationNamesIn,
     countLocationDescendants,
     countCategoryAssets,
   };
